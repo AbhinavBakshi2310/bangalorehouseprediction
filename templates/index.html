@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bangalore House Prediction</title>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.js"></script>
+<link rel="stylesheet" href="http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.css">
+<style>
+    #logo {
+        background-image: url("/static/img/4.jpg");
+        background-repeat:no-repeat;
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;}
+    #bath,#locat,#area,#balcony,#bhk,#price{
+        background-color: #EFEFEF !important;
+    }
+</style>
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>  
+<body>
+<div id="logo">
+<div class="container"> <br />
+   <h2 align="center">Welcome to Bangalore House Prediction</h2>
+   <h2 align="center">Enter your requirements</h2><br />
+   <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+     <form action="/price" method="post" id="sample_form">
+      <div class="form-group">
+       <label>Location</label>
+       <select name="locat" id="locat" class="form-control">
+        {% for l in locations %}
+            <option class="form-control" value="{{l}}">{{l}}</option>
+        {% endfor %} 
+       </select>
+       <br>
+        </div>
+       <div class="form-group">
+        <label>Bathrooms</label>
+        <input type="number" name="bath" id="bath" class="form-control"><br>
+       </div>
+       <div class="form-group">
+        <label>Balcony</label>
+        <input type="number" name="balcony" id="balcony" class="form-control"><br>
+       </div>
+       <div class="form-group">
+        <label>BHK</label>
+        <input type="number" name="bhk" id="bhk" class="form-control"><br>
+       </div>
+       <div class="form-group">
+        <label>Area(sqft)</label>
+        <input type="number" name="area" id="area" class="form-control" placeholder="Optional">
+       </div>
+      <div class="form-group">
+       <input type="submit" name="Save" id="save" class="btn btn-success" value="Predict" />
+      </div>
+      <div class="form-group">
+          <p id="price" class="form-control"></p>
+      </div>
+     </form>
+    </div>
+   </div>
+  </div>
+</div>
+  <script>  
+$(document).ready(function(){
+    $('#locat').editableSelect();
+      $('#sample_form').on('submit', function(event){
+        event.preventDefault();
+        if($('#locat').val() == ''){
+            alert("Select location");
+            jQuery('#sample_form #locat').focus();
+            return false;
+        }
+        else if($('#bhk').val() == ''){
+           alert("Select bhk");
+           jQuery('#sample_form #bhk').focus();
+           return false;
+        }
+        else if($('#balcony').val() == ''){
+           alert("Select balcony");
+           jQuery('#sample_form #balcony').focus();
+           return false;
+        }
+        else if($('#bath').val() == ''){
+           alert("Select bathrooms");
+           jQuery('#sample_form #bath').focus();
+           return false;
+        }
+        else{
+            $.ajax({
+                url:"/price",
+                method:"POST",
+                data:{
+                    bath:$('#bath').val(),
+                    balcony:$('#balcony').val(),
+                    locat:$('#locat').val(),
+                    area:$('#area').val(),
+                    bhk:$('#bhk').val()
+                },
+                success:function(data)
+                {
+                 $('#price').text("The estimated price of your house is "+data.price+" lakh rupees");
+                 $('#sample_form')[0].reset();
+                 location.reload().delay(8000);
+                }
+           });
+        }
+    });
+});  
+</script>
+</body>  
+</html> 
