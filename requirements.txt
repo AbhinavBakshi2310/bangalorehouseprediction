@@ -13,5 +13,4 @@ numpy==1.18.5
 pickleshare==0.7.5
 scikit-learn 
 Werkzeug==1.0.1
-pickle
 pytest
