@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    loc=pandas.read_csv('Locations.csv')
+    loc=pandas.read_csv('bangalorehouseprediction/Locations.csv')
     locations=loc.iloc[:,0].values
     return render_template("index.html",locations=locations)
 
@@ -24,7 +24,7 @@ def price():
         bhk= int(request.form["bhk"])
         area= request.form["area"]
         balcony= int(request.form["balcony"])
-        data=pandas.read_csv('FinalData.csv')
+        data=pandas.read_csv('bangalorehouseprediction/FinalData.csv')
         df=data.groupby('location').agg('mean')
         if loca not in data['location'].unique():
             matches = fuzzywuzzy.process.extract(loca, data['location'].unique(),limit=20, scorer=fuzzywuzzy.fuzz.token_sort_ratio)
@@ -45,9 +45,9 @@ def price():
         'sqft_area':[area],
         'price_per_sqft':[pps]}
         b=pandas.DataFrame(a)
-        randomforest=pickle.load(open('randomforest.sav', 'rb'))
-        lasso=pickle.load(open('lasso.sav', 'rb'))
-        ols=pickle.load(open('ols.sav', 'rb'))
+        randomforest=pickle.load(open('bangalorehouseprediction/randomforest.sav', 'rb'))
+        lasso=pickle.load(open('bangalorehouseprediction/lasso.sav', 'rb'))
+        ols=pickle.load(open('bangalorehouseprediction/ols.sav', 'rb'))
         price=randomforest.predict(b)
         if price>=1000:
             price=(lasso.predict(b)+ols.predict(b))/2
