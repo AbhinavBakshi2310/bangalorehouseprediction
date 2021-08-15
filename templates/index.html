@@ -8,15 +8,24 @@
 <script src="https://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.js"></script>
 <link rel="stylesheet" href="https://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.css">
 <style>
-    #logo {
+    @font-face {
+        font-family: myfont;
+        src: url("{{ url_for('static', filename='cf.otf') }}");
+        font-weight: bold;
+    }
+    body{
         background-image: url("/static/img/4.jpg");
         background-repeat:no-repeat;
+        background-size: cover;
         height: 100%;
         background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;}
+    }
+    #logo {
+        font-family: myfont,sans-serif;
+    }
     #bath,#locat,#area,#balcony,#bhk,#price{
         background-color: #EFEFEF !important;
+        border: gray ridge 1px;
     }
 </style>
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -24,42 +33,45 @@
 <body>
 <div id="logo">
 <div class="container"> <br />
-   <h2 align="center">Welcome to Bangalore House Prediction</h2>
-   <h2 align="center">Enter your requirements</h2><br />
+   <b>
+   <h1 align="center" >WELCOME TO BANGALORE HOUSE PREDICTION</h1>
+   <h2 align="center" >Find the estimated price of our dream house</h2><br />
+   </b>
    <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
      <form action="/price" method="post" id="sample_form">
       <div class="form-group">
        <label>Location</label>
-       <select name="locat" id="locat" class="form-control">
+       <select name="locat" id="locat" class="form-control" placeholder="Kumarswamy layout">
         {% for l in locations %}
             <option class="form-control" value="{{l}}">{{l}}</option>
         {% endfor %} 
        </select>
        <br>
         </div>
+        <div class="form-group">
+        <label>BHK</label>
+        <input type="number" name="bhk" id="bhk" class="form-control" placeholder="2"><br>
+        </div> 
        <div class="form-group">
         <label>Bathrooms</label>
-        <input type="number" name="bath" id="bath" class="form-control"><br>
+        <input type="number" name="bath" id="bath" class="form-control" placeholder="1"><br>
        </div>
        <div class="form-group">
         <label>Balcony</label>
-        <input type="number" name="balcony" id="balcony" class="form-control"><br>
-       </div>
-       <div class="form-group">
-        <label>BHK</label>
-        <input type="number" name="bhk" id="bhk" class="form-control"><br>
+        <input type="number" name="balcony" id="balcony" class="form-control" placeholder="1"><br>
        </div>
        <div class="form-group">
         <label>Area(sqft)</label>
         <input type="number" name="area" id="area" class="form-control" placeholder="Optional">
        </div>
-      <div class="form-group">
+      <div class="form-group" align="center">
        <input type="submit" name="Save" id="save" class="btn btn-success" value="Predict" />
       </div>
+      <img src="/static/img/9.gif" style="width: 8%; margin-left: 46%; display:none; " id="gif" />
       <div class="form-group">
-          <p id="price" class="form-control"></p>
+          <p id="price" class="form-control" style="display:none"></p>
       </div>
      </form>
     </div>
@@ -70,25 +82,31 @@
 $(document).ready(function(){
     $('#locat').editableSelect();
       $('#sample_form').on('submit', function(event){
+        $('#price').hide();
+        $('#gif').show()
         event.preventDefault();
         if($('#locat').val() == ''){
             alert("Select location");
             jQuery('#sample_form #locat').focus();
+            $('#gif').hide();
             return false;
         }
         else if($('#bhk').val() == ''){
            alert("Select bhk");
            jQuery('#sample_form #bhk').focus();
+           $('#gif').hide();
            return false;
         }
         else if($('#balcony').val() == ''){
            alert("Select balcony");
            jQuery('#sample_form #balcony').focus();
+           $('#gif').hide();
            return false;
         }
         else if($('#bath').val() == ''){
            alert("Select bathrooms");
            jQuery('#sample_form #bath').focus();
+           $('#gif').hide();
            return false;
         }
         else{
@@ -104,6 +122,8 @@ $(document).ready(function(){
                 },
                 success:function(data)
                 {
+                 $('#gif').hide()
+                 $('#price').show();
                  $('#price').text("The estimated price of your house is "+data.price+" lakh rupees");
                  $('#sample_form')[0].reset();
                 }
